@@ -1,0 +1,71 @@
+一、ubuntu安装mysql
+apt-get install mysql-server
+apt-get install mysql-client
+apt-get install libmysqlclient-dev
+netstat -tap | grep mysql
+
+二、mysql允许远程访问
+修改配置文件 /etc/mysql/my.cnf，将 bind-address=127.0.0.1 修改为 bind-address = 0.0.0.0 ，以允许任何IP来访问MySQL服务。
+vim /etc/mysql/my.cnf
+bind-address = 0.0.0.0
+重启MySQL服务， /etc/init.d/mysql restart
+登录MySQL数据库，给需要远程访问的用户授权：
+mysql -uroot -proot
+mysql> grant all privileges on *.* to root@"%" identified by "root" with grant option;
+刷新配置，使权限立即生效：
+mysql> flush privileges;
+service mysql restart
+
+三、python-MySQL
+apt-get install python-pip
+apt-get install python-dev
+pip install mysql-python
+import MySQLdb
+(python 包安装)
+
+四、git安装
+apt-get install git
+
+五、NiCad安装配置参数
+安装txl  ./InstallTxl
+安装nicad  make
+设置nicad参数config/default.cfg   rename=blind
+
+六、安装python-Levenshtein-0.12.0包
+python setup.py build
+python setup.py install
+
+七、后台执行
+python a.py > log &
+
+八、数据库备份
+1备份整个数据库
+mysqldump -u username -p dbname >  BackupName.sql
+mysql -u root -p dbname < BackupName.sql
+2备份部分数据表
+mysqldump -u username -p dbname tablename > BackupName.sql
+mysql -u root -p dbname < BackupName.sql
+
+mysqldump -u root -p codeclone >  software-all.sql
+mysqldump -u root -p codeclone commit versioninfo cloneclassshortevolvepattern clonegenealogy >  software-query.sql
+注意恢复数据库之前，需要提前新建一个空的数据库
+
+清空数据表truncate table tb
+克隆检测过程中出现异常停止现象，删除最近一次克隆检测，接着开始
+select count(*) from  commit where isbugfix='yes';
+
+克隆家系提取过程慢，查看还剩多少：select count(*) from cloneclassshortevolvepattern where clonegenealogyid='';
+
+
+运行中问题解决
+1、克隆谱系提取过程中突然停止
+	首先查到最后一个插入克隆谱系表的克隆谱系编号x，然后在cloneclassshortevolvepattern中将x+1置空，重新运行，起始x
+	select * from cloneclassshortevolvepattern where clonegenealogyid='x+1';
+	update cloneclassshortevolvepattern set clonegenealogyid='' where clonegenealogyid='x+1';
+2、克隆检测过程中突然停止
+	删除最后一个未记录克隆个数的 克隆群、克隆片段结果
+	delete from cloneclass where version='x';
+	delete from clonefragment where version='x';
+	然后重新运行克隆检测脚本文件即可，内部已经处理重运行情况
+	
+
